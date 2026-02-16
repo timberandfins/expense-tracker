@@ -52,9 +52,6 @@
       background: var(--bg-card);
       padding: 2rem 1.5rem 1.5rem;
       border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
     }
 
@@ -396,6 +393,68 @@
       display: none;
     }
 
+    .recent-entries {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      animation: slideUp 0.4s ease-out;
+    }
+
+    .entry-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      align-items: start;
+    }
+
+    .entry-item:last-child {
+      border-bottom: none;
+    }
+
+    .entry-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .entry-category {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .entry-details {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .entry-amount {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--secondary);
+      text-align: right;
+    }
+
+    .entry-date {
+      font-size: 0.625rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .no-entries {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-style: italic;
+    }
+
     @media (min-width: 600px) {
       .header {
         padding: 3rem 2rem 2rem;
@@ -415,7 +474,7 @@
   <div class="header">
     <div class="header-content">
       <div class="logo">Expense Tracker</div>
-      <div class="subtitle">Professional Edition</div>
+      <div class="subtitle">TIMBER&FINS</div>
     </div>
   </div>
 
@@ -432,6 +491,13 @@
 
     <div id="messageContainer"></div>
 
+    <div id="recentEntriesSection" class="recent-entries">
+      <div class="section-title">Recent Entries</div>
+      <div id="recentEntriesList">
+        <div class="no-entries">No recent entries</div>
+      </div>
+    </div>
+
     <form id="expenseForm">
       <div class="form-section">
         <div class="section-title">Expense Details</div>
@@ -442,12 +508,12 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="vendor">Vendor</label>
-          <input type="text" id="vendor" class="form-input" placeholder="Store or business name" required>
+          <label class="form-label" for="vendor">Business (Optional)</label>
+          <input type="text" id="vendor" class="form-input" placeholder="Store or business name">
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="description">Description</label>
+          <label class="form-label" for="description">Description (Optional)</label>
           <input type="text" id="description" class="form-input" placeholder="What was purchased">
         </div>
 
@@ -519,8 +585,8 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="paymentMethod">Payment Method</label>
-          <select id="paymentMethod" class="form-select" required>
+          <label class="form-label" for="paymentMethod">Payment Method (Optional)</label>
+          <select id="paymentMethod" class="form-select">
             <option value="">Select payment method</option>
             <option value="Cash">Cash</option>
             <option value="Credit Card">Credit Card</option>
@@ -639,6 +705,55 @@
     // Set today's date as default
     document.getElementById('date').valueAsDate = new Date();
 
+    // Load and display recent entries
+    function loadRecentEntries() {
+      const entries = JSON.parse(localStorage.getItem('recentExpenses') || '[]');
+      const recentEntriesList = document.getElementById('recentEntriesList');
+      
+      if (entries.length === 0) {
+        recentEntriesList.innerHTML = '<div class="no-entries">No recent entries</div>';
+        return;
+      }
+
+      recentEntriesList.innerHTML = entries.map(entry => `
+        <div class="entry-item">
+          <div class="entry-info">
+            <div class="entry-category">${entry.category}</div>
+            <div class="entry-details">
+              ${entry.vendor ? entry.vendor : 'No business'}
+              ${entry.description ? ' • ' + entry.description : ''}
+            </div>
+            <div class="entry-date">${formatDate(entry.date)} • ${entry.province}</div>
+          </div>
+          <div>
+            <div class="entry-amount">${formatCurrency(entry.total)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${months[date.getMonth()]} ${date.getDate()}`;
+    }
+
+    function saveRecentEntry(expenseData) {
+      let entries = JSON.parse(localStorage.getItem('recentExpenses') || '[]');
+      
+      // Add new entry at the beginning
+      entries.unshift(expenseData);
+      
+      // Keep only last 10 entries
+      entries = entries.slice(0, 10);
+      
+      localStorage.setItem('recentExpenses', JSON.stringify(entries));
+      loadRecentEntries();
+    }
+
+    // Load entries on page load
+    loadRecentEntries();
+
     // Load saved configuration
     const savedScriptUrl = localStorage.getItem('expenseTrackerScriptUrl');
     if (savedScriptUrl) {
@@ -751,6 +866,9 @@
 
         // Note: With no-cors, we can't read the response, but if no error is thrown, it likely succeeded
         showMessage('✓ Expense added successfully!', 'success');
+        
+        // Save to recent entries
+        saveRecentEntry(expenseData);
         
         // Reset form
         form.reset();
