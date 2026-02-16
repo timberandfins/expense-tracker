@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Expense Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a1a1a;
+      --secondary: #8b7355;
+      --accent: #d4a574;
+      --bg-light: #faf8f5;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --border: #e5e1db;
+      --success: #2d5c3f;
+      --error: #8b3a3a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, var(--bg-light) 0%, #f5f2ed 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding-bottom: 2rem;
+      overflow-x: hidden;
+    }
+
+    .header {
+      background: var(--bg-card);
+      padding: 2rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .header-content {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .form-section {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-light);
+      transition: all 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--secondary);
+      background: var(--bg-card);
+      box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    .amount-input-wrapper {
+      position: relative;
+    }
+
+    .currency-symbol {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .amount-input {
+      padding-left: 2rem;
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .tax-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .tax-display {
+      background: var(--bg-light);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .tax-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .tax-amount {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .total-section {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(139, 115, 85, 0.25);
+    }
+
+    .total-label {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-amount {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1.125rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-submit:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .success-message,
+    .error-message {
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .success-message {
+      background: rgba(45, 92, 63, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(45, 92, 63, 0.2);
+    }
+
+    .error-message {
+      background: rgba(139, 58, 58, 0.1);
+      color: var(--error);
+      border: 1px solid rgba(139, 58, 58, 0.2);
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    .setup-section {
+      background: rgba(139, 115, 85, 0.05);
+      border: 1px dashed var(--secondary);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .setup-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    .setup-text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .setup-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: 'Inter', monospace;
+      background: var(--bg-card);
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-save-config {
+      padding: 0.625rem 1.25rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-save-config:active {
+      transform: scale(0.98);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (min-width: 600px) {
+      .header {
+        padding: 3rem 2rem 2rem;
+      }
+
+      .container {
+        padding: 3rem 2rem;
+      }
+
+      .form-section {
+        padding: 2.5rem 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">Expense Tracker</div>
+      <div class="subtitle">Professional Edition</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="setupSection" class="setup-section">
+      <div class="setup-title">⚙️ Setup Required</div>
+      <div class="setup-text">
+        To connect this app to your Google Sheet, you'll need to set up a Google Apps Script Web App. 
+        Instructions are provided below the form.
+      </div>
+      <input type="text" id="scriptUrlInput" class="setup-input" placeholder="Paste your Google Apps Script Web App URL here">
+      <button id="saveConfigBtn" class="btn-save-config">Save Configuration</button>
+    </div>
+
+    <div id="messageContainer"></div>
+
+    <form id="expenseForm">
+      <div class="form-section">
+        <div class="section-title">Expense Details</div>
+        
+        <div class="form-group">
+          <label class="form-label" for="date">Date</label>
+          <input type="date" id="date" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="vendor">Vendor</label>
+          <input type="text" id="vendor" class="form-input" placeholder="Store or business name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Description</label>
+          <input type="text" id="description" class="form-input" placeholder="What was purchased">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="category">Category</label>
+          <select id="category" class="form-select" required>
+            <option value="">Select a category</option>
+            <option value="Cost of Goods Sold">Cost of Goods Sold</option>
+            <option value="Cost of Goods Sold - Leather & Raw Materials">COGS - Leather & Raw Materials</option>
+            <option value="Cost of Goods Sold - Hardware & Components">COGS - Hardware & Components</option>
+            <option value="Cost of Goods Sold - Packaging Materials">COGS - Packaging Materials</option>
+            <option value="Cost of Goods Sold - Production Supplies">COGS - Production Supplies</option>
+            <option value="Cost of Goods Sold - Wholesale Production">COGS - Wholesale Production</option>
+            <option value="Cost of Goods Sold - Manufacturing Tools">COGS - Manufacturing Tools</option>
+            <option value="Cost of Goods Sold - Prototyping">COGS - Prototyping</option>
+            <option value="Trade Shows & Events">Trade Shows & Events</option>
+            <option value="Trade Shows & Events - Trade Show Fees">Trade Shows - Fees</option>
+            <option value="Trade Shows & Events - Booth Equipment">Trade Shows - Booth Equipment</option>
+            <option value="Trade Shows & Events - Show Travel">Trade Shows - Travel</option>
+            <option value="Trade Shows & Events - Show Lodging">Trade Shows - Lodging</option>
+            <option value="Trade Shows & Events - Show Meals">Trade Shows - Meals</option>
+            <option value="Trade Shows & Events - Samples & Gifting">Trade Shows - Samples & Gifting</option>
+            <option value="Shipping">Shipping</option>
+            <option value="Shipping - Shipping Supplies">Shipping - Supplies</option>
+            <option value="Shipping - Courier & Postage">Shipping - Courier & Postage</option>
+            <option value="Shipping - Freight">Shipping - Freight</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Marketing - Advertising">Marketing - Advertising</option>
+            <option value="Marketing - Social Media Ads">Marketing - Social Media Ads</option>
+            <option value="Marketing - Photography">Marketing - Photography</option>
+            <option value="Marketing - Website">Marketing - Website</option>
+            <option value="Marketing - Hosting & Domains">Marketing - Hosting & Domains</option>
+            <option value="Marketing - Email Marketing">Marketing - Email Marketing</option>
+            <option value="Marketing - Branding & Design">Marketing - Branding & Design</option>
+            <option value="Marketing - Sponsorships">Marketing - Sponsorships</option>
+            <option value="Office & Admin">Office & Admin</option>
+            <option value="Office & Admin - Office Supplies">Office - Supplies</option>
+            <option value="Office & Admin - Software">Office - Software</option>
+            <option value="Office & Admin - Subscriptions">Office - Subscriptions</option>
+            <option value="Office & Admin - Accounting">Office - Accounting</option>
+            <option value="Office & Admin - Legal">Office - Legal</option>
+            <option value="Office & Admin - Banking Fees">Office - Banking Fees</option>
+            <option value="Office & Admin - Insurance">Office - Insurance</option>
+            <option value="Office & Admin - Licenses & Permits">Office - Licenses & Permits</option>
+            <option value="Vehicle & Travel">Vehicle & Travel</option>
+            <option value="Vehicle & Travel - Fuel">Vehicle - Fuel</option>
+            <option value="Vehicle & Travel - Vehicle Maintenance">Vehicle - Maintenance</option>
+            <option value="Vehicle & Travel - Parking">Vehicle - Parking</option>
+            <option value="Vehicle & Travel - Flights">Travel - Flights</option>
+            <option value="Vehicle & Travel - Hotels">Travel - Hotels</option>
+            <option value="Vehicle & Travel - Client Meals">Travel - Client Meals</option>
+            <option value="Overhead">Overhead</option>
+            <option value="Overhead - Rent">Overhead - Rent</option>
+            <option value="Overhead - Utilities">Overhead - Utilities</option>
+            <option value="Overhead - Internet">Overhead - Internet</option>
+            <option value="Overhead - Phone">Overhead - Phone</option>
+            <option value="Overhead - Studio Expenses">Overhead - Studio Expenses</option>
+            <option value="Overhead - Storage">Overhead - Storage</option>
+            <option value="Financial">Financial</option>
+            <option value="Financial - Interest">Financial - Interest</option>
+            <option value="Financial - Loan Payments">Financial - Loan Payments</option>
+            <option value="Financial - Payroll">Financial - Payroll</option>
+            <option value="Financial - Contractor Payments">Financial - Contractor Payments</option>
+            <option value="Financial - Taxes Paid">Financial - Taxes Paid</option>
+            <option value="Other">Other</option>
+            <option value="Other - Education">Other - Education</option>
+            <option value="Other - Miscellaneous">Other - Miscellaneous</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="paymentMethod">Payment Method</label>
+          <select id="paymentMethod" class="form-select" required>
+            <option value="">Select payment method</option>
+            <option value="Cash">Cash</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit">Debit</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="province">Province</label>
+          <select id="province" class="form-select" required>
+            <option value="QC">Quebec (QC)</option>
+            <option value="ON">Ontario (ON)</option>
+            <option value="BC">British Columbia (BC)</option>
+            <option value="AB">Alberta (AB)</option>
+            <option value="MB">Manitoba (MB)</option>
+            <option value="SK">Saskatchewan (SK)</option>
+            <option value="NS">Nova Scotia (NS)</option>
+            <option value="NB">New Brunswick (NB)</option>
+            <option value="NL">Newfoundland and Labrador (NL)</option>
+            <option value="PE">Prince Edward Island (PE)</option>
+            <option value="NT">Northwest Territories (NT)</option>
+            <option value="NU">Nunavut (NU)</option>
+            <option value="YT">Yukon (YT)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">Amount</div>
+        
+        <div class="form-group">
+          <label class="form-label" for="subtotal">Subtotal (Before Tax)</label>
+          <div class="amount-input-wrapper">
+            <span class="currency-symbol">$</span>
+            <input type="number" id="subtotal" class="form-input amount-input" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+          <div class="helper-text">Enter the amount before taxes</div>
+        </div>
+
+        <div class="tax-grid">
+          <div class="tax-display">
+            <div class="tax-label">Tax 1 (GST/HST)</div>
+            <div class="tax-amount" id="tax1Display">$0.00</div>
+          </div>
+          <div class="tax-display">
+            <div class="tax-label">Tax 2 (PST/QST)</div>
+            <div class="tax-amount" id="tax2Display">$0.00</div>
+          </div>
+        </div>
+
+        <div class="total-section">
+          <div class="total-label">Total Amount</div>
+          <div class="total-amount" id="totalDisplay">$0.00</div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label class="form-label" for="notes">Receipt Notes (Optional)</label>
+          <input type="text" id="notes" class="form-input" placeholder="Additional details or reference">
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">
+        <span id="btnText">Add Expense</span>
+      </button>
+    </form>
+
+    <div class="form-section" style="margin-top: 3rem; background: rgba(139, 115, 85, 0.03);">
+      <div class="section-title">📋 Setup Instructions</div>
+      <div style="font-size: 0.875rem; line-height: 1.6; color: var(--text-secondary);">
+        <p style="margin-bottom: 1rem;"><strong>Step 1:</strong> Open your Google Sheet</p>
+        <p style="margin-bottom: 1rem;"><strong>Step 2:</strong> Go to Extensions → Apps Script</p>
+        <p style="margin-bottom: 1rem;"><strong>Step 3:</strong> Create a new script file and paste the backend code (provided separately)</p>
+        <p style="margin-bottom: 1rem;"><strong>Step 4:</strong> Click Deploy → New Deployment → Select "Web app"</p>
+        <p style="margin-bottom: 1rem;"><strong>Step 5:</strong> Set "Execute as" to yourself and "Who has access" to "Anyone"</p>
+        <p style="margin-bottom: 1rem;"><strong>Step 6:</strong> Copy the Web App URL and paste it in the setup section above</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Provincial tax rates
+    const taxRates = {
+      'QC': { tax1: 0.05, tax2: 0.09975 },
+      'ON': { tax1: 0.13, tax2: 0 },
+      'BC': { tax1: 0.05, tax2: 0.07 },
+      'AB': { tax1: 0.05, tax2: 0 },
+      'MB': { tax1: 0.05, tax2: 0.07 },
+      'SK': { tax1: 0.05, tax2: 0.06 },
+      'NS': { tax1: 0.15, tax2: 0 },
+      'NB': { tax1: 0.15, tax2: 0 },
+      'NL': { tax1: 0.15, tax2: 0 },
+      'PE': { tax1: 0.15, tax2: 0 },
+      'NT': { tax1: 0.05, tax2: 0 },
+      'NU': { tax1: 0.05, tax2: 0 },
+      'YT': { tax1: 0.05, tax2: 0 }
+    };
+
+    // Elements
+    const form = document.getElementById('expenseForm');
+    const subtotalInput = document.getElementById('subtotal');
+    const provinceSelect = document.getElementById('province');
+    const tax1Display = document.getElementById('tax1Display');
+    const tax2Display = document.getElementById('tax2Display');
+    const totalDisplay = document.getElementById('totalDisplay');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const messageContainer = document.getElementById('messageContainer');
+    const setupSection = document.getElementById('setupSection');
+    const scriptUrlInput = document.getElementById('scriptUrlInput');
+    const saveConfigBtn = document.getElementById('saveConfigBtn');
+
+    // Set today's date as default
+    document.getElementById('date').valueAsDate = new Date();
+
+    // Load saved configuration
+    const savedScriptUrl = localStorage.getItem('expenseTrackerScriptUrl');
+    if (savedScriptUrl) {
+      scriptUrlInput.value = savedScriptUrl;
+      setupSection.style.display = 'none';
+    }
+
+    // Save configuration
+    saveConfigBtn.addEventListener('click', () => {
+      const url = scriptUrlInput.value.trim();
+      if (url) {
+        localStorage.setItem('expenseTrackerScriptUrl', url);
+        showMessage('Configuration saved! You can now add expenses.', 'success');
+        setupSection.style.display = 'none';
+      } else {
+        showMessage('Please enter a valid URL.', 'error');
+      }
+    });
+
+    // Calculate taxes on input
+    function calculateTaxes() {
+      const subtotal = parseFloat(subtotalInput.value) || 0;
+      const province = provinceSelect.value;
+      const rates = taxRates[province];
+
+      if (rates && subtotal > 0) {
+        const tax1 = subtotal * rates.tax1;
+        const tax2 = subtotal * rates.tax2;
+        const total = subtotal + tax1 + tax2;
+
+        tax1Display.textContent = formatCurrency(tax1);
+        tax2Display.textContent = formatCurrency(tax2);
+        totalDisplay.textContent = formatCurrency(total);
+      } else {
+        tax1Display.textContent = '$0.00';
+        tax2Display.textContent = '$0.00';
+        totalDisplay.textContent = '$0.00';
+      }
+    }
+
+    subtotalInput.addEventListener('input', calculateTaxes);
+    provinceSelect.addEventListener('change', calculateTaxes);
+
+    // Format currency
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-CA', {
+        style: 'currency',
+        currency: 'CAD'
+      }).format(amount);
+    }
+
+    // Show message
+    function showMessage(text, type) {
+      messageContainer.innerHTML = `
+        <div class="${type}-message">
+          ${text}
+        </div>
+      `;
+      setTimeout(() => {
+        messageContainer.innerHTML = '';
+      }, 5000);
+    }
+
+    // Handle form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const scriptUrl = localStorage.getItem('expenseTrackerScriptUrl');
+      if (!scriptUrl) {
+        showMessage('Please configure the Google Apps Script URL first.', 'error');
+        setupSection.style.display = 'block';
+        return;
+      }
+
+      // Disable button and show loading
+      submitBtn.disabled = true;
+      btnText.innerHTML = '<span class="spinner"></span> Adding Expense...';
+
+      // Gather form data
+      const subtotal = parseFloat(subtotalInput.value);
+      const province = provinceSelect.value;
+      const rates = taxRates[province];
+      const tax1 = subtotal * rates.tax1;
+      const tax2 = subtotal * rates.tax2;
+      const total = subtotal + tax1 + tax2;
+
+      const expenseData = {
+        date: document.getElementById('date').value,
+        vendor: document.getElementById('vendor').value,
+        description: document.getElementById('description').value,
+        category: document.getElementById('category').value,
+        paymentMethod: document.getElementById('paymentMethod').value,
+        province: province,
+        subtotal: subtotal,
+        tax1: tax1,
+        tax2: tax2,
+        total: total,
+        notes: document.getElementById('notes').value
+      };
+
+      try {
+        const response = await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(expenseData)
+        });
+
+        // Note: With no-cors, we can't read the response, but if no error is thrown, it likely succeeded
+        showMessage('✓ Expense added successfully!', 'success');
+        
+        // Reset form
+        form.reset();
+        document.getElementById('date').valueAsDate = new Date();
+        provinceSelect.value = 'QC';
+        calculateTaxes();
+
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('Error adding expense. Please check your connection and try again.', 'error');
+      } finally {
+        // Re-enable button
+        submitBtn.disabled = false;
+        btnText.textContent = 'Add Expense';
+      }
+    });
+  </script>
+</body>
+</html>
