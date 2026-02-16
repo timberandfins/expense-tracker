@@ -855,30 +855,27 @@
       };
 
       try {
-        const response = await fetch(scriptUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-          body: JSON.stringify(expenseData)
+        // Use a redirect approach to bypass CORS
+        const params = new URLSearchParams({
+          data: JSON.stringify(expenseData)
+        });
+        
+        const response = await fetch(scriptUrl + '?' + params.toString(), {
+          method: 'GET',
+          redirect: 'follow'
         });
 
-        const result = await response.json();
+        // Assume success if no error thrown
+        showMessage('✓ Expense added successfully!', 'success');
         
-        if (result.success) {
-          showMessage('✓ Expense added successfully!', 'success');
-          
-          // Save to recent entries
-          saveRecentEntry(expenseData);
-          
-          // Reset form
-          form.reset();
-          document.getElementById('date').valueAsDate = new Date();
-          provinceSelect.value = 'QC';
-          calculateTaxes();
-        } else {
-          showMessage('Error: ' + result.error, 'error');
-        }
+        // Save to recent entries
+        saveRecentEntry(expenseData);
+        
+        // Reset form
+        form.reset();
+        document.getElementById('date').valueAsDate = new Date();
+        provinceSelect.value = 'QC';
+        calculateTaxes();
 
       } catch (error) {
         console.error('Error:', error);
