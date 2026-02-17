@@ -770,12 +770,12 @@
         <div class="section-title">Amount</div>
 
         <div class="form-group">
-          <label class="form-label" for="subtotal">Subtotal (Before Tax)</label>
+          <label class="form-label" for="subtotal">Total (incl. tax)</label>
           <div class="amount-input-wrapper">
             <span class="currency-symbol">$</span>
             <input type="number" id="subtotal" class="form-input amount-input" step="0.01" min="0" placeholder="0.00" required>
           </div>
-          <div class="helper-text">Enter the pre-tax amount — total is calculated automatically</div>
+          <div class="helper-text">Enter the total amount from your receipt — taxes are back-calculated automatically</div>
         </div>
 
         <div class="tax-grid">
@@ -790,7 +790,7 @@
         </div>
 
         <div class="total-section">
-          <div class="total-label">Total Amount (incl. tax)</div>
+          <div class="total-label">Subtotal (before tax)</div>
           <div class="total-amount" id="totalDisplay">$0.00</div>
         </div>
       </div>
@@ -943,21 +943,26 @@
       }
     }
 
-    // ── TAX CALCULATION ──────────────────────────────────────────────────────
+    // ── TAX BACK-CALCULATION ─────────────────────────────────────────────────
+    // Mirrors the Google Sheet logic exactly:
+    //   subtotal = total / (1 + rate1 + rate2)
+    //   tax1     = subtotal * rate1
+    //   tax2     = subtotal * rate2
     function calculateTaxes() {
-      const subtotal = parseFloat(subtotalInput.value) || 0;
+      const total    = parseFloat(subtotalInput.value) || 0;
       const province = provinceSelect.value;
-      const rates = taxRates[province];
-      if (rates && subtotal > 0) {
-        const tax1 = subtotal * rates.tax1;
-        const tax2 = subtotal * rates.tax2;
-        const total = subtotal + tax1 + tax2;
-        tax1Display.textContent = formatCurrency(tax1);
-        tax2Display.textContent = formatCurrency(tax2);
-        totalDisplay.textContent = formatCurrency(total);
+      const rates    = taxRates[province];
+      if (rates && total > 0) {
+        const divisor  = 1 + rates.tax1 + rates.tax2;
+        const subtotal = total / divisor;
+        const tax1     = subtotal * rates.tax1;
+        const tax2     = subtotal * rates.tax2;
+        tax1Display.textContent  = formatCurrency(tax1);
+        tax2Display.textContent  = formatCurrency(tax2);
+        totalDisplay.textContent = formatCurrency(subtotal);
       } else {
-        tax1Display.textContent = '$0.00';
-        tax2Display.textContent = '$0.00';
+        tax1Display.textContent  = '$0.00';
+        tax2Display.textContent  = '$0.00';
         totalDisplay.textContent = '$0.00';
       }
     }
@@ -980,13 +985,14 @@
       submitBtn.disabled = true;
       btnText.innerHTML = '<span class="spinner"></span> Adding Expense…';
 
-      // Calculate values
-      const subtotal  = parseFloat(subtotalInput.value) || 0;
-      const province  = provinceSelect.value;
-      const rates     = taxRates[province];
-      const tax1      = subtotal * rates.tax1;
-      const tax2      = subtotal * rates.tax2;
-      const total     = subtotal + tax1 + tax2;
+      // Input field IS the total — back-calculate subtotal and taxes
+      const total    = parseFloat(subtotalInput.value) || 0;
+      const province = provinceSelect.value;
+      const rates    = taxRates[province];
+      const divisor  = 1 + rates.tax1 + rates.tax2;
+      const subtotal = total / divisor;
+      const tax1     = subtotal * rates.tax1;
+      const tax2     = subtotal * rates.tax2;
 
       const expenseData = {
         date:          document.getElementById('date').value,
