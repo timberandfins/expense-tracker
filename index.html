@@ -223,57 +223,49 @@
       font-style: italic;
     }
 
-    .tax-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 1.25rem;
-    }
-
-    .tax-display {
+    .breakdown-row {
+      display: flex;
+      align-items: center;
       background: var(--bg-light);
-      padding: 1rem;
-      border-radius: 8px;
       border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+      margin-top: 0.75rem;
+      gap: 0;
     }
 
-    .tax-label {
-      font-size: 0.7rem;
+    .breakdown-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .breakdown-label {
+      font-size: 0.65rem;
       color: var(--text-secondary);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.35rem;
+      letter-spacing: 0.06em;
+      font-weight: 500;
     }
 
-    .tax-amount {
-      font-size: 1.1rem;
+    .breakdown-value {
+      font-size: 0.95rem;
       font-weight: 600;
       color: var(--primary);
     }
 
-    .total-section {
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin-top: 1.25rem;
-      text-align: center;
-      box-shadow: 0 4px 16px rgba(139, 115, 85, 0.25);
+    .breakdown-value.zero {
+      color: var(--text-secondary);
+      font-weight: 400;
     }
 
-    .total-label {
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.8);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.4rem;
-    }
-
-    .total-amount {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.5rem;
-      font-weight: 600;
-      color: white;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    .breakdown-divider {
+      width: 1px;
+      height: 2rem;
+      background: var(--border);
+      flex-shrink: 0;
     }
 
     .btn-submit {
@@ -638,14 +630,6 @@
     <!-- Messages -->
     <div id="messageContainer"></div>
 
-    <!-- Recent entries -->
-    <div class="recent-entries">
-      <div class="section-title">Recent Entries</div>
-      <div id="recentEntriesList">
-        <div class="no-entries">No recent entries</div>
-      </div>
-    </div>
-
     <!-- ── EXPENSE FORM ──────────────────────────────────────────────────────── -->
     <form id="expenseForm">
 
@@ -764,6 +748,11 @@
             <option value="YT">Yukon (YT)</option>
           </select>
         </div>
+
+        <div class="form-group">
+          <label class="form-label" for="notes">Receipt Notes (Optional)</label>
+          <input type="text" id="notes" class="form-input" placeholder="Additional details or reference number">
+        </div>
       </div>
 
       <div class="form-section">
@@ -775,38 +764,40 @@
             <span class="currency-symbol">$</span>
             <input type="number" id="subtotal" class="form-input amount-input" step="0.01" min="0" placeholder="0.00" required>
           </div>
-          <div class="helper-text">Enter the total amount from your receipt — taxes are back-calculated automatically</div>
         </div>
 
-        <div class="tax-grid">
-          <div class="tax-display">
-            <div class="tax-label">Tax 1 (GST/HST)</div>
-            <div class="tax-amount" id="tax1Display">$0.00</div>
+        <div class="breakdown-row">
+          <div class="breakdown-item">
+            <span class="breakdown-label">Subtotal</span>
+            <span class="breakdown-value" id="totalDisplay">—</span>
           </div>
-          <div class="tax-display">
-            <div class="tax-label">Tax 2 (PST/QST)</div>
-            <div class="tax-amount" id="tax2Display">$0.00</div>
+          <div class="breakdown-divider"></div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">GST / HST</span>
+            <span class="breakdown-value" id="tax1Display">—</span>
+          </div>
+          <div class="breakdown-divider"></div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">PST / QST</span>
+            <span class="breakdown-value" id="tax2Display">—</span>
           </div>
         </div>
 
-        <div class="total-section">
-          <div class="total-label">Subtotal (before tax)</div>
-          <div class="total-amount" id="totalDisplay">$0.00</div>
-        </div>
+        <button type="submit" id="submitBtn" class="btn-submit">
+          <span id="btnText">Add Expense</span>
+        </button>
       </div>
-
-      <div class="form-section">
-        <div class="form-group">
-          <label class="form-label" for="notes">Receipt Notes (Optional)</label>
-          <input type="text" id="notes" class="form-input" placeholder="Additional details or reference number">
-        </div>
-      </div>
-
-      <button type="submit" id="submitBtn" class="btn-submit">
-        <span id="btnText">Add Expense</span>
-      </button>
 
     </form>
+
+    <!-- Recent entries — shown after the form -->
+    <div class="recent-entries" style="margin-top: 2.5rem;">
+      <div class="section-title">Recent Entries</div>
+      <div id="recentEntriesList">
+        <div class="no-entries">No recent entries</div>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -958,12 +949,15 @@
         const tax1     = subtotal * rates.tax1;
         const tax2     = subtotal * rates.tax2;
         tax1Display.textContent  = formatCurrency(tax1);
-        tax2Display.textContent  = formatCurrency(tax2);
+        tax2Display.textContent  = rates.tax2 > 0 ? formatCurrency(tax2) : '—';
         totalDisplay.textContent = formatCurrency(subtotal);
+        [tax1Display, tax2Display, totalDisplay].forEach(el => el.classList.remove('zero'));
+        if (rates.tax2 === 0) tax2Display.classList.add('zero');
       } else {
-        tax1Display.textContent  = '$0.00';
-        tax2Display.textContent  = '$0.00';
-        totalDisplay.textContent = '$0.00';
+        tax1Display.textContent  = '—';
+        tax2Display.textContent  = '—';
+        totalDisplay.textContent = '—';
+        [tax1Display, tax2Display, totalDisplay].forEach(el => el.classList.add('zero'));
       }
     }
 
