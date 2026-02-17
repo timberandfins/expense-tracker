@@ -9,11 +9,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Expenses">
-  
-  <!-- App Icons for iOS -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%238b7355'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='80' fill='white' font-family='system-ui'>💰</text></svg>">
-  
-  <!-- Prevent iOS Safari bounce/pull-to-refresh -->
   <meta name="format-detection" content="telephone=no">
   
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -58,6 +53,9 @@
     .header-content {
       max-width: 500px;
       margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
     }
 
     .logo {
@@ -66,15 +64,55 @@
       font-weight: 600;
       color: var(--primary);
       letter-spacing: 0.02em;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
     }
 
     .subtitle {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
       font-weight: 400;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.25rem;
+    }
+
+    .btn-config {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.03em;
+      transition: all 0.2s ease;
+    }
+
+    .btn-config:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    .connection-status {
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .connection-status.connected {
+      color: var(--success);
+    }
+
+    .connection-status.disconnected {
+      color: var(--error);
     }
 
     .container {
@@ -94,14 +132,8 @@
     }
 
     @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .section-title {
@@ -133,8 +165,7 @@
     }
 
     .form-input,
-    .form-select,
-    .form-textarea {
+    .form-select {
       width: 100%;
       padding: 0.875rem 1rem;
       border: 1px solid var(--border);
@@ -149,8 +180,7 @@
     }
 
     .form-input:focus,
-    .form-select:focus,
-    .form-textarea:focus {
+    .form-select:focus {
       outline: none;
       border-color: var(--secondary);
       background: var(--bg-card);
@@ -177,6 +207,7 @@
       font-size: 1.125rem;
       color: var(--text-secondary);
       font-weight: 500;
+      pointer-events: none;
     }
 
     .amount-input {
@@ -185,10 +216,18 @@
       font-weight: 500;
     }
 
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
     .tax-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
+      margin-top: 1.25rem;
     }
 
     .tax-display {
@@ -199,15 +238,15 @@
     }
 
     .tax-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.35rem;
     }
 
     .tax-amount {
-      font-size: 1.125rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--primary);
     }
@@ -216,17 +255,17 @@
       background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
       padding: 1.5rem;
       border-radius: 12px;
-      margin-top: 1.5rem;
+      margin-top: 1.25rem;
       text-align: center;
       box-shadow: 0 4px 16px rgba(139, 115, 85, 0.25);
     }
 
     .total-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: rgba(255, 255, 255, 0.8);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
 
     .total-amount {
@@ -265,24 +304,6 @@
       cursor: not-allowed;
     }
 
-    .btn-submit::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    .btn-submit:active::before {
-      width: 300px;
-      height: 300px;
-    }
-
     .success-message,
     .error-message {
       padding: 1rem 1.25rem;
@@ -294,14 +315,8 @@
     }
 
     @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .success-message {
@@ -317,8 +332,8 @@
     }
 
     .spinner {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-top-color: white;
       border-radius: 50%;
@@ -332,49 +347,92 @@
       to { transform: rotate(360deg); }
     }
 
-    .helper-text {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      margin-top: 0.5rem;
-      font-style: italic;
-    }
-
-    .setup-section {
-      background: rgba(139, 115, 85, 0.05);
-      border: 1px dashed var(--secondary);
-      border-radius: 12px;
+    /* ── SETUP MODAL ──────────────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
       padding: 1.5rem;
-      margin-bottom: 2rem;
+      backdrop-filter: blur(4px);
     }
 
-    .setup-title {
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: slideUp 0.3s ease-out;
+    }
+
+    .modal-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.125rem;
+      font-size: 1.4rem;
       font-weight: 600;
-      color: var(--secondary);
-      margin-bottom: 0.75rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
     }
 
-    .setup-text {
-      font-size: 0.875rem;
+    .modal-subtitle {
+      font-size: 0.8rem;
       color: var(--text-secondary);
       line-height: 1.6;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
-    .setup-input {
+    .modal-input {
       width: 100%;
-      padding: 0.75rem 1rem;
+      padding: 0.875rem 1rem;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.875rem;
       font-family: 'Inter', monospace;
-      background: var(--bg-card);
-      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+      background: var(--bg-light);
+      margin-bottom: 1rem;
+      -webkit-appearance: none;
     }
 
-    .btn-save-config {
-      padding: 0.625rem 1.25rem;
+    .modal-input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .btn-cancel {
+      padding: 0.75rem 1.25rem;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    .btn-save {
+      padding: 0.75rem 1.5rem;
       background: var(--secondary);
       color: white;
       border: none;
@@ -382,17 +440,33 @@
       font-size: 0.875rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
     }
 
-    .btn-save-config:active {
+    .btn-save:active {
       transform: scale(0.98);
     }
 
-    .hidden {
-      display: none;
+    .setup-steps {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
 
+    .setup-steps p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .setup-steps strong {
+      color: var(--text-primary);
+    }
+
+    /* ── RECENT ENTRIES ───────────────────────────────────────────────────── */
     .recent-entries {
       background: var(--bg-card);
       border-radius: 16px;
@@ -404,7 +478,7 @@
     }
 
     .entry-item {
-      padding: 1rem;
+      padding: 1rem 0;
       border-bottom: 1px solid var(--border);
       display: grid;
       grid-template-columns: 1fr auto;
@@ -414,94 +488,170 @@
 
     .entry-item:last-child {
       border-bottom: none;
+      padding-bottom: 0;
     }
 
-    .entry-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
+    .entry-item:first-child {
+      padding-top: 0;
     }
 
     .entry-category {
       font-size: 0.875rem;
       font-weight: 600;
       color: var(--primary);
+      margin-bottom: 0.2rem;
     }
 
     .entry-details {
       font-size: 0.75rem;
       color: var(--text-secondary);
-    }
-
-    .entry-amount {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: var(--secondary);
-      text-align: right;
+      margin-bottom: 0.15rem;
     }
 
     .entry-date {
-      font-size: 0.625rem;
+      font-size: 0.65rem;
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
+    .entry-amount {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--secondary);
+      text-align: right;
+      white-space: nowrap;
+    }
+
     .no-entries {
       text-align: center;
-      padding: 2rem;
+      padding: 1.5rem;
       color: var(--text-secondary);
       font-size: 0.875rem;
       font-style: italic;
     }
 
+    /* ── SETUP BANNER (shown when not configured) ─────────────────────────── */
+    .setup-banner {
+      background: rgba(139, 115, 85, 0.08);
+      border: 1px dashed var(--secondary);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .setup-banner-text {
+      font-size: 0.875rem;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+
+    .setup-banner-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+
+    .btn-setup-now {
+      padding: 0.625rem 1.125rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      flex-shrink: 0;
+    }
+
     @media (min-width: 600px) {
-      .header {
-        padding: 3rem 2rem 2rem;
-      }
-
-      .container {
-        padding: 3rem 2rem;
-      }
-
-      .form-section {
-        padding: 2.5rem 2rem;
-      }
+      .header { padding: 3rem 2rem 2rem; }
+      .container { padding: 3rem 2rem; }
+      .form-section { padding: 2.5rem 2rem; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
   <div class="header">
     <div class="header-content">
-      <div class="logo">Expense Tracker</div>
-      <div class="subtitle">TIMBER&FINS</div>
+      <div>
+        <div class="logo">Expense Tracker</div>
+        <div class="subtitle">TIMBER&amp;FINS</div>
+      </div>
+      <div class="header-right">
+        <span id="connectionStatus" class="connection-status disconnected">● Not connected</span>
+        <button class="btn-config" onclick="openModal()">⚙ Configure</button>
+      </div>
     </div>
   </div>
 
-  <div class="container">
-    <div id="setupSection" class="setup-section">
-      <div class="setup-title">⚙️ Setup Required</div>
-      <div class="setup-text">
-        To connect this app to your Google Sheet, you'll need to set up a Google Apps Script Web App. 
-        Instructions are provided below the form.
+  <!-- ── SETUP MODAL ────────────────────────────────────────────────────────── -->
+  <div id="setupModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-title">Connect to Google Sheets</div>
+      <p class="modal-subtitle">Paste your Google Apps Script Web App URL to link this app to your spreadsheet.</p>
+
+      <div class="setup-steps">
+        <p>
+          <strong>Step 1:</strong> Open your Google Sheet → Extensions → Apps Script<br>
+          <strong>Step 2:</strong> Add the WebApp.gs backend script<br>
+          <strong>Step 3:</strong> Deploy → New Deployment → Web app<br>
+          <strong>Step 4:</strong> Set "Execute as: Me" and "Who has access: Anyone"<br>
+          <strong>Step 5:</strong> Copy the Web App URL and paste it below
+        </p>
       </div>
-      <input type="text" id="scriptUrlInput" class="setup-input" placeholder="Paste your Google Apps Script Web App URL here">
-      <button id="saveConfigBtn" class="btn-save-config">Save Configuration</button>
+
+      <input
+        type="url"
+        id="scriptUrlInput"
+        class="modal-input"
+        placeholder="https://script.google.com/macros/s/.../exec"
+      >
+
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelModalBtn">Cancel</button>
+        <button class="btn-save" id="saveConfigBtn">Save & Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ───────────────────────────────────────────────────────── -->
+  <div class="container">
+
+    <!-- Setup banner (hidden once configured) -->
+    <div id="setupBanner" class="setup-banner" style="display:none;">
+      <div>
+        <div class="setup-banner-text">⚙️ Google Sheet not connected</div>
+        <div class="setup-banner-sub">Expenses won't be saved until you connect.</div>
+      </div>
+      <button class="btn-setup-now" onclick="openModal()">Connect Now</button>
     </div>
 
+    <!-- Messages -->
     <div id="messageContainer"></div>
 
-    <div id="recentEntriesSection" class="recent-entries">
+    <!-- Recent entries -->
+    <div class="recent-entries">
       <div class="section-title">Recent Entries</div>
       <div id="recentEntriesList">
         <div class="no-entries">No recent entries</div>
       </div>
     </div>
 
+    <!-- ── EXPENSE FORM ──────────────────────────────────────────────────────── -->
     <form id="expenseForm">
+
       <div class="form-section">
         <div class="section-title">Expense Details</div>
-        
+
         <div class="form-group">
           <label class="form-label" for="date">Date</label>
           <input type="date" id="date" class="form-input" required>
@@ -522,49 +672,49 @@
           <select id="category" class="form-select" required>
             <option value="">Select a category</option>
             <option value="Cost of Goods Sold">Cost of Goods Sold</option>
-            <option value="Cost of Goods Sold - Leather & Raw Materials">COGS - Leather & Raw Materials</option>
-            <option value="Cost of Goods Sold - Hardware & Components">COGS - Hardware & Components</option>
+            <option value="Cost of Goods Sold - Leather &amp; Raw Materials">COGS - Leather &amp; Raw Materials</option>
+            <option value="Cost of Goods Sold - Hardware &amp; Components">COGS - Hardware &amp; Components</option>
             <option value="Cost of Goods Sold - Packaging Materials">COGS - Packaging Materials</option>
             <option value="Cost of Goods Sold - Production Supplies">COGS - Production Supplies</option>
             <option value="Cost of Goods Sold - Wholesale Production">COGS - Wholesale Production</option>
             <option value="Cost of Goods Sold - Manufacturing Tools">COGS - Manufacturing Tools</option>
             <option value="Cost of Goods Sold - Prototyping">COGS - Prototyping</option>
-            <option value="Trade Shows & Events">Trade Shows & Events</option>
-            <option value="Trade Shows & Events - Trade Show Fees">Trade Shows - Fees</option>
-            <option value="Trade Shows & Events - Booth Equipment">Trade Shows - Booth Equipment</option>
-            <option value="Trade Shows & Events - Show Travel">Trade Shows - Travel</option>
-            <option value="Trade Shows & Events - Show Lodging">Trade Shows - Lodging</option>
-            <option value="Trade Shows & Events - Show Meals">Trade Shows - Meals</option>
-            <option value="Trade Shows & Events - Samples & Gifting">Trade Shows - Samples & Gifting</option>
+            <option value="Trade Shows &amp; Events">Trade Shows &amp; Events</option>
+            <option value="Trade Shows &amp; Events - Trade Show Fees">Trade Shows - Fees</option>
+            <option value="Trade Shows &amp; Events - Booth Equipment">Trade Shows - Booth Equipment</option>
+            <option value="Trade Shows &amp; Events - Show Travel">Trade Shows - Travel</option>
+            <option value="Trade Shows &amp; Events - Show Lodging">Trade Shows - Lodging</option>
+            <option value="Trade Shows &amp; Events - Show Meals">Trade Shows - Meals</option>
+            <option value="Trade Shows &amp; Events - Samples &amp; Gifting">Trade Shows - Samples &amp; Gifting</option>
             <option value="Shipping">Shipping</option>
             <option value="Shipping - Shipping Supplies">Shipping - Supplies</option>
-            <option value="Shipping - Courier & Postage">Shipping - Courier & Postage</option>
+            <option value="Shipping - Courier &amp; Postage">Shipping - Courier &amp; Postage</option>
             <option value="Shipping - Freight">Shipping - Freight</option>
             <option value="Marketing">Marketing</option>
             <option value="Marketing - Advertising">Marketing - Advertising</option>
             <option value="Marketing - Social Media Ads">Marketing - Social Media Ads</option>
             <option value="Marketing - Photography">Marketing - Photography</option>
             <option value="Marketing - Website">Marketing - Website</option>
-            <option value="Marketing - Hosting & Domains">Marketing - Hosting & Domains</option>
+            <option value="Marketing - Hosting &amp; Domains">Marketing - Hosting &amp; Domains</option>
             <option value="Marketing - Email Marketing">Marketing - Email Marketing</option>
-            <option value="Marketing - Branding & Design">Marketing - Branding & Design</option>
+            <option value="Marketing - Branding &amp; Design">Marketing - Branding &amp; Design</option>
             <option value="Marketing - Sponsorships">Marketing - Sponsorships</option>
-            <option value="Office & Admin">Office & Admin</option>
-            <option value="Office & Admin - Office Supplies">Office - Supplies</option>
-            <option value="Office & Admin - Software">Office - Software</option>
-            <option value="Office & Admin - Subscriptions">Office - Subscriptions</option>
-            <option value="Office & Admin - Accounting">Office - Accounting</option>
-            <option value="Office & Admin - Legal">Office - Legal</option>
-            <option value="Office & Admin - Banking Fees">Office - Banking Fees</option>
-            <option value="Office & Admin - Insurance">Office - Insurance</option>
-            <option value="Office & Admin - Licenses & Permits">Office - Licenses & Permits</option>
-            <option value="Vehicle & Travel">Vehicle & Travel</option>
-            <option value="Vehicle & Travel - Fuel">Vehicle - Fuel</option>
-            <option value="Vehicle & Travel - Vehicle Maintenance">Vehicle - Maintenance</option>
-            <option value="Vehicle & Travel - Parking">Vehicle - Parking</option>
-            <option value="Vehicle & Travel - Flights">Travel - Flights</option>
-            <option value="Vehicle & Travel - Hotels">Travel - Hotels</option>
-            <option value="Vehicle & Travel - Client Meals">Travel - Client Meals</option>
+            <option value="Office &amp; Admin">Office &amp; Admin</option>
+            <option value="Office &amp; Admin - Office Supplies">Office - Supplies</option>
+            <option value="Office &amp; Admin - Software">Office - Software</option>
+            <option value="Office &amp; Admin - Subscriptions">Office - Subscriptions</option>
+            <option value="Office &amp; Admin - Accounting">Office - Accounting</option>
+            <option value="Office &amp; Admin - Legal">Office - Legal</option>
+            <option value="Office &amp; Admin - Banking Fees">Office - Banking Fees</option>
+            <option value="Office &amp; Admin - Insurance">Office - Insurance</option>
+            <option value="Office &amp; Admin - Licenses &amp; Permits">Office - Licenses &amp; Permits</option>
+            <option value="Vehicle &amp; Travel">Vehicle &amp; Travel</option>
+            <option value="Vehicle &amp; Travel - Fuel">Vehicle - Fuel</option>
+            <option value="Vehicle &amp; Travel - Vehicle Maintenance">Vehicle - Maintenance</option>
+            <option value="Vehicle &amp; Travel - Parking">Vehicle - Parking</option>
+            <option value="Vehicle &amp; Travel - Flights">Travel - Flights</option>
+            <option value="Vehicle &amp; Travel - Hotels">Travel - Hotels</option>
+            <option value="Vehicle &amp; Travel - Client Meals">Travel - Client Meals</option>
             <option value="Overhead">Overhead</option>
             <option value="Overhead - Rent">Overhead - Rent</option>
             <option value="Overhead - Utilities">Overhead - Utilities</option>
@@ -618,14 +768,14 @@
 
       <div class="form-section">
         <div class="section-title">Amount</div>
-        
+
         <div class="form-group">
           <label class="form-label" for="subtotal">Subtotal (Before Tax)</label>
           <div class="amount-input-wrapper">
             <span class="currency-symbol">$</span>
             <input type="number" id="subtotal" class="form-input amount-input" step="0.01" min="0" placeholder="0.00" required>
           </div>
-          <div class="helper-text">Enter the amount before taxes</div>
+          <div class="helper-text">Enter the pre-tax amount — total is calculated automatically</div>
         </div>
 
         <div class="tax-grid">
@@ -640,7 +790,7 @@
         </div>
 
         <div class="total-section">
-          <div class="total-label">Total Amount</div>
+          <div class="total-label">Total Amount (incl. tax)</div>
           <div class="total-amount" id="totalDisplay">$0.00</div>
         </div>
       </div>
@@ -648,142 +798,160 @@
       <div class="form-section">
         <div class="form-group">
           <label class="form-label" for="notes">Receipt Notes (Optional)</label>
-          <input type="text" id="notes" class="form-input" placeholder="Additional details or reference">
+          <input type="text" id="notes" class="form-input" placeholder="Additional details or reference number">
         </div>
       </div>
 
       <button type="submit" id="submitBtn" class="btn-submit">
         <span id="btnText">Add Expense</span>
       </button>
-    </form>
 
-    <div class="form-section" style="margin-top: 3rem; background: rgba(139, 115, 85, 0.03);">
-      <div class="section-title">📋 Setup Instructions</div>
-      <div style="font-size: 0.875rem; line-height: 1.6; color: var(--text-secondary);">
-        <p style="margin-bottom: 1rem;"><strong>Step 1:</strong> Open your Google Sheet</p>
-        <p style="margin-bottom: 1rem;"><strong>Step 2:</strong> Go to Extensions → Apps Script</p>
-        <p style="margin-bottom: 1rem;"><strong>Step 3:</strong> Create a new script file and paste the backend code (provided separately)</p>
-        <p style="margin-bottom: 1rem;"><strong>Step 4:</strong> Click Deploy → New Deployment → Select "Web app"</p>
-        <p style="margin-bottom: 1rem;"><strong>Step 5:</strong> Set "Execute as" to yourself and "Who has access" to "Anyone"</p>
-        <p style="margin-bottom: 1rem;"><strong>Step 6:</strong> Copy the Web App URL and paste it in the setup section above</p>
-      </div>
-    </div>
+    </form>
   </div>
 
   <script>
-    // Provincial tax rates
+    // ── PROVINCIAL TAX RATES ─────────────────────────────────────────────────
     const taxRates = {
-      'QC': { tax1: 0.05, tax2: 0.09975 },
-      'ON': { tax1: 0.13, tax2: 0 },
-      'BC': { tax1: 0.05, tax2: 0.07 },
-      'AB': { tax1: 0.05, tax2: 0 },
-      'MB': { tax1: 0.05, tax2: 0.07 },
-      'SK': { tax1: 0.05, tax2: 0.06 },
-      'NS': { tax1: 0.15, tax2: 0 },
-      'NB': { tax1: 0.15, tax2: 0 },
-      'NL': { tax1: 0.15, tax2: 0 },
-      'PE': { tax1: 0.15, tax2: 0 },
-      'NT': { tax1: 0.05, tax2: 0 },
-      'NU': { tax1: 0.05, tax2: 0 },
-      'YT': { tax1: 0.05, tax2: 0 }
+      'QC': { tax1: 0.05,  tax2: 0.09975 },
+      'ON': { tax1: 0.13,  tax2: 0 },
+      'BC': { tax1: 0.05,  tax2: 0.07 },
+      'AB': { tax1: 0.05,  tax2: 0 },
+      'MB': { tax1: 0.05,  tax2: 0.07 },
+      'SK': { tax1: 0.05,  tax2: 0.06 },
+      'NS': { tax1: 0.15,  tax2: 0 },
+      'NB': { tax1: 0.15,  tax2: 0 },
+      'NL': { tax1: 0.15,  tax2: 0 },
+      'PE': { tax1: 0.15,  tax2: 0 },
+      'NT': { tax1: 0.05,  tax2: 0 },
+      'NU': { tax1: 0.05,  tax2: 0 },
+      'YT': { tax1: 0.05,  tax2: 0 }
     };
 
-    // Elements
-    const form = document.getElementById('expenseForm');
-    const subtotalInput = document.getElementById('subtotal');
-    const provinceSelect = document.getElementById('province');
-    const tax1Display = document.getElementById('tax1Display');
-    const tax2Display = document.getElementById('tax2Display');
-    const totalDisplay = document.getElementById('totalDisplay');
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = document.getElementById('btnText');
-    const messageContainer = document.getElementById('messageContainer');
-    const setupSection = document.getElementById('setupSection');
-    const scriptUrlInput = document.getElementById('scriptUrlInput');
-    const saveConfigBtn = document.getElementById('saveConfigBtn');
+    // ── ELEMENT REFERENCES ───────────────────────────────────────────────────
+    const form              = document.getElementById('expenseForm');
+    const subtotalInput     = document.getElementById('subtotal');
+    const provinceSelect    = document.getElementById('province');
+    const tax1Display       = document.getElementById('tax1Display');
+    const tax2Display       = document.getElementById('tax2Display');
+    const totalDisplay      = document.getElementById('totalDisplay');
+    const submitBtn         = document.getElementById('submitBtn');
+    const btnText           = document.getElementById('btnText');
+    const messageContainer  = document.getElementById('messageContainer');
+    const setupModal        = document.getElementById('setupModal');
+    const scriptUrlInput    = document.getElementById('scriptUrlInput');
+    const saveConfigBtn     = document.getElementById('saveConfigBtn');
+    const cancelModalBtn    = document.getElementById('cancelModalBtn');
+    const setupBanner       = document.getElementById('setupBanner');
+    const connectionStatus  = document.getElementById('connectionStatus');
 
-    // Set today's date as default
+    // ── INIT ─────────────────────────────────────────────────────────────────
     document.getElementById('date').valueAsDate = new Date();
+    loadRecentEntries();
+    updateConnectionUI();
 
-    // Load and display recent entries
+    // ── MODAL ────────────────────────────────────────────────────────────────
+    function openModal() {
+      const saved = localStorage.getItem('expenseTrackerScriptUrl') || '';
+      scriptUrlInput.value = saved;
+      setupModal.classList.add('open');
+      setTimeout(() => scriptUrlInput.focus(), 300);
+    }
+
+    function closeModal() {
+      setupModal.classList.remove('open');
+    }
+
+    cancelModalBtn.addEventListener('click', closeModal);
+
+    // Close on backdrop click
+    setupModal.addEventListener('click', (e) => {
+      if (e.target === setupModal) closeModal();
+    });
+
+    saveConfigBtn.addEventListener('click', () => {
+      const url = scriptUrlInput.value.trim();
+      if (url && url.startsWith('https://script.google.com')) {
+        localStorage.setItem('expenseTrackerScriptUrl', url);
+        closeModal();
+        updateConnectionUI();
+        showMessage('✓ Connected to Google Sheets!', 'success');
+      } else {
+        scriptUrlInput.style.borderColor = 'var(--error)';
+        setTimeout(() => scriptUrlInput.style.borderColor = '', 2000);
+        showMessage('Please enter a valid Google Apps Script URL.', 'error');
+      }
+    });
+
+    function updateConnectionUI() {
+      const url = localStorage.getItem('expenseTrackerScriptUrl');
+      if (url) {
+        connectionStatus.textContent = '● Connected';
+        connectionStatus.className = 'connection-status connected';
+        setupBanner.style.display = 'none';
+      } else {
+        connectionStatus.textContent = '● Not connected';
+        connectionStatus.className = 'connection-status disconnected';
+        setupBanner.style.display = 'flex';
+      }
+    }
+
+    // ── RECENT ENTRIES ───────────────────────────────────────────────────────
     function loadRecentEntries() {
       const entries = JSON.parse(localStorage.getItem('recentExpenses') || '[]');
-      const recentEntriesList = document.getElementById('recentEntriesList');
-      
+      const list = document.getElementById('recentEntriesList');
       if (entries.length === 0) {
-        recentEntriesList.innerHTML = '<div class="no-entries">No recent entries</div>';
+        list.innerHTML = '<div class="no-entries">No recent entries</div>';
         return;
       }
-
-      recentEntriesList.innerHTML = entries.map(entry => `
+      list.innerHTML = entries.map(entry => `
         <div class="entry-item">
-          <div class="entry-info">
+          <div>
             <div class="entry-category">${entry.category}</div>
             <div class="entry-details">
-              ${entry.vendor ? entry.vendor : 'No business'}
-              ${entry.description ? ' • ' + entry.description : ''}
+              ${entry.vendor || 'No business'}${entry.description ? ' · ' + entry.description : ''}
             </div>
-            <div class="entry-date">${formatDate(entry.date)} • ${entry.province}</div>
+            <div class="entry-date">${formatDate(entry.date)} · ${entry.province}</div>
           </div>
-          <div>
-            <div class="entry-amount">${formatCurrency(entry.total)}</div>
-          </div>
+          <div class="entry-amount">${formatCurrency(entry.total)}</div>
         </div>
       `).join('');
     }
 
-    function formatDate(dateStr) {
-      const date = new Date(dateStr);
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return `${months[date.getMonth()]} ${date.getDate()}`;
-    }
-
     function saveRecentEntry(expenseData) {
       let entries = JSON.parse(localStorage.getItem('recentExpenses') || '[]');
-      
-      // Add new entry at the beginning
       entries.unshift(expenseData);
-      
-      // Keep only last 10 entries
       entries = entries.slice(0, 10);
-      
       localStorage.setItem('recentExpenses', JSON.stringify(entries));
       loadRecentEntries();
     }
 
-    // Load entries on page load
-    loadRecentEntries();
-
-    // Load saved configuration
-    const savedScriptUrl = localStorage.getItem('expenseTrackerScriptUrl');
-    if (savedScriptUrl) {
-      scriptUrlInput.value = savedScriptUrl;
-      setupSection.style.display = 'none';
+    // ── HELPERS ──────────────────────────────────────────────────────────────
+    function formatDate(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00');
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${months[d.getMonth()]} ${d.getDate()}`;
     }
 
-    // Save configuration
-    saveConfigBtn.addEventListener('click', () => {
-      const url = scriptUrlInput.value.trim();
-      if (url) {
-        localStorage.setItem('expenseTrackerScriptUrl', url);
-        showMessage('Configuration saved! You can now add expenses.', 'success');
-        setupSection.style.display = 'none';
-      } else {
-        showMessage('Please enter a valid URL.', 'error');
-      }
-    });
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(amount);
+    }
 
-    // Calculate taxes on input
+    function showMessage(text, type) {
+      messageContainer.innerHTML = `<div class="${type}-message">${text}</div>`;
+      if (type === 'success') {
+        setTimeout(() => { messageContainer.innerHTML = ''; }, 5000);
+      }
+    }
+
+    // ── TAX CALCULATION ──────────────────────────────────────────────────────
     function calculateTaxes() {
       const subtotal = parseFloat(subtotalInput.value) || 0;
       const province = provinceSelect.value;
       const rates = taxRates[province];
-
       if (rates && subtotal > 0) {
         const tax1 = subtotal * rates.tax1;
         const tax2 = subtotal * rates.tax2;
         const total = subtotal + tax1 + tax2;
-
         tax1Display.textContent = formatCurrency(tax1);
         tax2Display.textContent = formatCurrency(tax2);
         totalDisplay.textContent = formatCurrency(total);
@@ -797,80 +965,55 @@
     subtotalInput.addEventListener('input', calculateTaxes);
     provinceSelect.addEventListener('change', calculateTaxes);
 
-    // Format currency
-    function formatCurrency(amount) {
-      return new Intl.NumberFormat('en-CA', {
-        style: 'currency',
-        currency: 'CAD'
-      }).format(amount);
-    }
-
-    // Show message
-    function showMessage(text, type) {
-      messageContainer.innerHTML = `
-        <div class="${type}-message">
-          ${text}
-        </div>
-      `;
-      setTimeout(() => {
-        messageContainer.innerHTML = '';
-      }, 5000);
-    }
-
-    // Handle form submission
+    // ── FORM SUBMISSION ──────────────────────────────────────────────────────
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const scriptUrl = localStorage.getItem('expenseTrackerScriptUrl');
       if (!scriptUrl) {
-        showMessage('Please configure the Google Apps Script URL first.', 'error');
-        setupSection.style.display = 'block';
+        showMessage('Please connect to Google Sheets first.', 'error');
+        openModal();
         return;
       }
 
-      // Disable button and show loading
+      // Disable button + show spinner
       submitBtn.disabled = true;
-      btnText.innerHTML = '<span class="spinner"></span> Adding Expense...';
+      btnText.innerHTML = '<span class="spinner"></span> Adding Expense…';
 
-      // Gather form data
-      const subtotal = parseFloat(subtotalInput.value);
-      const province = provinceSelect.value;
-      const rates = taxRates[province];
-      const tax1 = subtotal * rates.tax1;
-      const tax2 = subtotal * rates.tax2;
-      const total = subtotal + tax1 + tax2;
+      // Calculate values
+      const subtotal  = parseFloat(subtotalInput.value) || 0;
+      const province  = provinceSelect.value;
+      const rates     = taxRates[province];
+      const tax1      = subtotal * rates.tax1;
+      const tax2      = subtotal * rates.tax2;
+      const total     = subtotal + tax1 + tax2;
 
       const expenseData = {
-        date: document.getElementById('date').value,
-        vendor: document.getElementById('vendor').value,
-        description: document.getElementById('description').value,
-        category: document.getElementById('category').value,
+        date:          document.getElementById('date').value,
+        vendor:        document.getElementById('vendor').value.trim(),
+        description:   document.getElementById('description').value.trim(),
+        category:      document.getElementById('category').value,
         paymentMethod: document.getElementById('paymentMethod').value,
-        province: province,
-        subtotal: subtotal,
-        tax1: tax1,
-        tax2: tax2,
-        total: total,
-        notes: document.getElementById('notes').value
+        province:      province,
+        subtotal:      subtotal,
+        tax1:          tax1,
+        tax2:          tax2,
+        total:         total,   // ← Sheet writes this to column G; H/I/J are formula-computed
+        notes:         document.getElementById('notes').value.trim()
       };
 
       try {
-        // Use a redirect approach to bypass CORS
-        const params = new URLSearchParams({
-          data: JSON.stringify(expenseData)
-        });
-        
-        const response = await fetch(scriptUrl + '?' + params.toString(), {
+        // no-cors: browser won't read the response body but the request reaches Apps Script
+        const params = new URLSearchParams({ data: JSON.stringify(expenseData) });
+        await fetch(scriptUrl + '?' + params.toString(), {
           method: 'GET',
-          redirect: 'follow'
+          mode: 'no-cors'
         });
 
-        // Assume success if no error thrown
-        showMessage('✓ Expense added successfully!', 'success');
-        
-        // Save to recent entries
+        // With no-cors we can't read the response — treat reaching this line as success
+        showMessage('✓ Expense added to Google Sheet!', 'success');
         saveRecentEntry(expenseData);
-        
+
         // Reset form
         form.reset();
         document.getElementById('date').valueAsDate = new Date();
@@ -878,10 +1021,9 @@
         calculateTaxes();
 
       } catch (error) {
-        console.error('Error:', error);
-        showMessage('Error adding expense. Please check your connection and try again.', 'error');
+        console.error('Fetch error:', error);
+        showMessage('⚠️ Network error. Check your connection and try again.', 'error');
       } finally {
-        // Re-enable button
         submitBtn.disabled = false;
         btnText.textContent = 'Add Expense';
       }
