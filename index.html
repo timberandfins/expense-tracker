@@ -662,10 +662,52 @@
       <div style="font-size: 0.875rem; line-height: 1.6; color: var(--text-secondary);">
         <p style="margin-bottom: 1rem;"><strong>Step 1:</strong> Open your Google Sheet</p>
         <p style="margin-bottom: 1rem;"><strong>Step 2:</strong> Go to Extensions → Apps Script</p>
-        <p style="margin-bottom: 1rem;"><strong>Step 3:</strong> Create a new script file and paste the backend code (provided separately)</p>
+        <p style="margin-bottom: 1rem;"><strong>Step 3:</strong> Replace the contents of <code>Code.gs</code> with the script below, then save</p>
         <p style="margin-bottom: 1rem;"><strong>Step 4:</strong> Click Deploy → New Deployment → Select "Web app"</p>
-        <p style="margin-bottom: 1rem;"><strong>Step 5:</strong> Set "Execute as" to yourself and "Who has access" to "Anyone"</p>
+        <p style="margin-bottom: 1rem;"><strong>Step 5:</strong> Set "Execute as" to <em>Me</em> and "Who has access" to <em>Anyone</em></p>
         <p style="margin-bottom: 1rem;"><strong>Step 6:</strong> Copy the Web App URL and paste it in the setup section above</p>
+        <p style="margin-bottom: 0.5rem;"><strong>Backend code to paste in Apps Script:</strong></p>
+        <pre id="backendCode" style="background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.75rem; overflow-x: auto; white-space: pre; font-family: monospace; max-height: 300px; overflow-y: auto;">function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    appendExpense(data);
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  try {
+    if (e.parameter.data) {
+      var data = JSON.parse(e.parameter.data);
+      appendExpense(data);
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    return ContentService.createTextOutput(JSON.stringify({ status: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function appendExpense(data) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['Date','Vendor','Description','Category','Payment Method','Province','Subtotal','Tax 1 (GST/HST)','Tax 2 (PST/QST)','Total','Notes','Timestamp']);
+  }
+  sheet.appendRow([
+    data.date || '', data.vendor || '', data.description || '',
+    data.category || '', data.paymentMethod || '', data.province || '',
+    data.subtotal || 0, data.tax1 || 0, data.tax2 || 0, data.total || 0,
+    data.notes || '', new Date()
+  ]);
+}</pre>
+        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('backendCode').textContent).then(()=>this.textContent='Copied!').catch(()=>this.textContent='Copy failed')" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--secondary); color: white; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">Copy Backend Code</button>
       </div>
     </div>
   </div>
@@ -855,22 +897,23 @@
       };
 
       try {
-        // Use a redirect approach to bypass CORS
-        const params = new URLSearchParams({
-          data: JSON.stringify(expenseData)
-        });
-        
-        const response = await fetch(scriptUrl + '?' + params.toString(), {
-          method: 'GET',
-          redirect: 'follow'
+        // POST with no-cors + text/plain is the most reliable way to send
+        // data to Google Apps Script. The browser sends a "simple request"
+        // (no preflight), and Apps Script processes doPost(e) before its
+        // redirect. We cannot read the response in no-cors mode, but the
+        // data does reach the backend.
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(expenseData)
         });
 
-        // Assume success if no error thrown
-        showMessage('✓ Expense added successfully!', 'success');
-        
+        showMessage('Expense submitted to Google Sheets.', 'success');
+
         // Save to recent entries
         saveRecentEntry(expenseData);
-        
+
         // Reset form
         form.reset();
         document.getElementById('date').valueAsDate = new Date();
