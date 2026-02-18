@@ -731,7 +731,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="province">Province</label>
+          <label class="form-label" for="province">Province / Region</label>
           <select id="province" class="form-select" required>
             <option value="QC">Quebec (QC)</option>
             <option value="ON">Ontario (ON)</option>
@@ -746,6 +746,7 @@
             <option value="NT">Northwest Territories (NT)</option>
             <option value="NU">Nunavut (NU)</option>
             <option value="YT">Yukon (YT)</option>
+            <option value="NA">Not Applicable (NA)</option>
           </select>
         </div>
 
@@ -803,19 +804,20 @@
   <script>
     // ── PROVINCIAL TAX RATES ─────────────────────────────────────────────────
     const taxRates = {
-      'QC': { tax1: 0.05,  tax2: 0.09975 },
-      'ON': { tax1: 0.13,  tax2: 0 },
-      'BC': { tax1: 0.05,  tax2: 0.07 },
-      'AB': { tax1: 0.05,  tax2: 0 },
-      'MB': { tax1: 0.05,  tax2: 0.07 },
-      'SK': { tax1: 0.05,  tax2: 0.06 },
-      'NS': { tax1: 0.15,  tax2: 0 },
-      'NB': { tax1: 0.15,  tax2: 0 },
-      'NL': { tax1: 0.15,  tax2: 0 },
-      'PE': { tax1: 0.15,  tax2: 0 },
-      'NT': { tax1: 0.05,  tax2: 0 },
-      'NU': { tax1: 0.05,  tax2: 0 },
-      'YT': { tax1: 0.05,  tax2: 0 }
+      'QC': { tax1: 0.05,    tax2: 0.09975 },
+      'ON': { tax1: 0.13,    tax2: 0 },
+      'BC': { tax1: 0.05,    tax2: 0.07 },
+      'AB': { tax1: 0.05,    tax2: 0 },
+      'MB': { tax1: 0.05,    tax2: 0.07 },
+      'SK': { tax1: 0.05,    tax2: 0.06 },
+      'NS': { tax1: 0.15,    tax2: 0 },
+      'NB': { tax1: 0.15,    tax2: 0 },
+      'NL': { tax1: 0.15,    tax2: 0 },
+      'PE': { tax1: 0.15,    tax2: 0 },
+      'NT': { tax1: 0.05,    tax2: 0 },
+      'NU': { tax1: 0.05,    tax2: 0 },
+      'YT': { tax1: 0.05,    tax2: 0 },
+      'NA': { tax1: 0,       tax2: 0 }   // No Canadian tax on US purchases
     };
 
     // ── ELEMENT REFERENCES ───────────────────────────────────────────────────
@@ -939,6 +941,7 @@
     //   subtotal = total / (1 + rate1 + rate2)
     //   tax1     = subtotal * rate1
     //   tax2     = subtotal * rate2
+    // For US: both rates are 0, so subtotal = total and taxes show as —
     function calculateTaxes() {
       const total    = parseFloat(subtotalInput.value) || 0;
       const province = provinceSelect.value;
@@ -948,10 +951,13 @@
         const subtotal = total / divisor;
         const tax1     = subtotal * rates.tax1;
         const tax2     = subtotal * rates.tax2;
-        tax1Display.textContent  = formatCurrency(tax1);
-        tax2Display.textContent  = rates.tax2 > 0 ? formatCurrency(tax2) : '—';
+
         totalDisplay.textContent = formatCurrency(subtotal);
+        tax1Display.textContent  = rates.tax1 > 0 ? formatCurrency(tax1) : '—';
+        tax2Display.textContent  = rates.tax2 > 0 ? formatCurrency(tax2) : '—';
+
         [tax1Display, tax2Display, totalDisplay].forEach(el => el.classList.remove('zero'));
+        if (rates.tax1 === 0) tax1Display.classList.add('zero');
         if (rates.tax2 === 0) tax2Display.classList.add('zero');
       } else {
         tax1Display.textContent  = '—';
@@ -998,19 +1004,17 @@
         subtotal:      subtotal,
         tax1:          tax1,
         tax2:          tax2,
-        total:         total,   // ← Sheet writes this to column G; H/I/J are formula-computed
+        total:         total,
         notes:         document.getElementById('notes').value.trim()
       };
 
       try {
-        // no-cors: browser won't read the response body but the request reaches Apps Script
         const params = new URLSearchParams({ data: JSON.stringify(expenseData) });
         await fetch(scriptUrl + '?' + params.toString(), {
           method: 'GET',
           mode: 'no-cors'
         });
 
-        // With no-cors we can't read the response — treat reaching this line as success
         showMessage('✓ Expense added to Google Sheet!', 'success');
         saveRecentEntry(expenseData);
 
